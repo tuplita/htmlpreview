@@ -1,5 +1,7 @@
+// Modified by Tuplita (2026): removed third-party CORS proxy fallback.
+// Original work Copyright 2019 Jerzy Głowacki, licensed under Apache License 2.0.
 (function () {
-	
+
 	var previewForm = document.getElementById('previewform');
 
 	var url = location.search.substring(1).replace(/\/\/github\.com/, '//raw.githubusercontent.com').replace(/\/blob\//, '/'); //Get URL of the raw file
@@ -89,8 +91,7 @@
 	
 	var fetchProxy = function (url, options, i) {
 		var proxy = [
-			'', // try without proxy first
-			'https://api.codetabs.com/v1/proxy/?quest='
+			'' // direct fetch only
 		];
 		return fetch(proxy[i] + url, options).then(function (res) {
 			if (!res.ok) throw new Error('Cannot load ' + url + ': ' + res.status + ' ' + res.statusText);
