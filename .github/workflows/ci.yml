@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build & test
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Verify JavaScript syntax
+        # Parse-only check (no execution) — htmlpreview.js targets the browser
+        # so running it under Node would fail on `window`/`document` etc.
+        run: node --check htmlpreview.js
+
+      - name: Verify HTML parses
+        # Static repo, no build pipeline. Confirm index.html is well-formed
+        # enough for Python's permissive parser to consume before merge.
+        run: python3 -c "from html.parser import HTMLParser; HTMLParser().feed(open('index.html').read()); print('index.html parsed ok')"
